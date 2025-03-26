@@ -8,25 +8,30 @@
 #include <type_traits>
 #include <vector>
 
-template <typename SEARCH, typename TUPLE, std::size_t start_from = 0>
-struct contains_type
-    : if_type<
-          std::is_same_v<
-              std::tuple_element_t<start_from, std::remove_cv_t<TUPLE>>,
-              SEARCH>,
-          std::true_type,
-          typename if_type<
-              start_from == std::tuple_size<std::remove_cv_t<TUPLE>>::value - 1,
-              std::false_type,
-              contains_type<SEARCH, std::remove_cv_t<TUPLE>, start_from + 1>>::
-              type>::type
-{
-};
+namespace fire {
+    template <typename SEARCH, typename TUPLE, std::size_t start_from = 0>
+    struct contains_type
+        : if_type<
+              std::is_same_v<
+                  std::tuple_element_t<start_from, std::remove_cv_t<TUPLE>>,
+                  SEARCH>,
+              std::true_type,
+              typename if_type<
+                  start_from ==
+                      std::tuple_size<std::remove_cv_t<TUPLE>>::value - 1,
+                  std::false_type,
+                  contains_type<
+                      SEARCH,
+                      std::remove_cv_t<TUPLE>,
+                      start_from + 1>>::type>::type
+    {
+    };
 
-template <typename SEARCH>
-struct contains_type<SEARCH, std::tuple<>, 0> : std::false_type
-{
-};
+    template <typename SEARCH>
+    struct contains_type<SEARCH, std::tuple<>, 0> : std::false_type
+    {
+    };
+}
 
 inline auto constins(
     const std::string& search,
@@ -47,10 +52,10 @@ inline void test_contains_type()
     const std::tuple<int, bool, float> t;
 
     [[maybe_unused]]
-    static constexpr auto val = contains_type<bool, decltype(t)>::value;
+    static constexpr auto val = fire::contains_type<bool, decltype(t)>::value;
 
-    std::cout << std::boolalpha << contains_type<bool, decltype(t)>::value
+    std::cout << std::boolalpha << fire::contains_type<bool, decltype(t)>::value
               << '\n';
-    std::cout << std::boolalpha << contains_type<double, decltype(t)>::value
-              << '\n';
+    std::cout << std::boolalpha
+              << fire::contains_type<double, decltype(t)>::value << '\n';
 }

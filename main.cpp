@@ -5,6 +5,8 @@
 
 auto main() -> int
 {
+    using namespace fire;
+    
     type_list<int, bool, double> l;
     static_assert(std::is_same_v<front_t<decltype(l)>, int>);
 
