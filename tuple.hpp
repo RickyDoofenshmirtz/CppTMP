@@ -11,23 +11,29 @@
 
 namespace fire {
     template <typename... ELEMS>
-    struct tuple
+    class tuple
     {
+    public:
         constexpr tuple() = default;
     };
 
     template <typename ELEM0, typename... ELEM1toN>
-    struct tuple<ELEM0, ELEM1toN...> : tuple<ELEM1toN...>
+    class tuple<ELEM0, ELEM1toN...> : public tuple<ELEM1toN...>
     {
+    public:
         template <typename T, typename... Ts>
         explicit constexpr tuple(T&& e1, Ts&&... rest)
             : tuple<ELEM1toN...>(std::forward<Ts>(rest)...),
-              data(std::forward<T>(e1))
+              m_data(std::forward<T>(e1))
 
         {
         }
 
-        ELEM0 data;
+        constexpr auto data() -> ELEM0& { return m_data; }
+        constexpr auto data() const -> const ELEM0& { return m_data; }
+
+    private:
+        ELEM0 m_data;
     };
 
     template <typename T, typename... Ts>
@@ -62,25 +68,25 @@ namespace fire {
                 if constexpr (is_const && is_lvalue)
                 {
                     return static_cast<const data_t&>(
-                        static_cast<const TUPLE&>(std::forward<T>(t)).data);
+                        static_cast<const TUPLE&>(std::forward<T>(t)).data());
                 }
 
                 if constexpr (!is_const && is_lvalue)
                 {
                     return static_cast<data_t&>(
-                        static_cast<TUPLE&>(std::forward<T>(t)).data);
+                        static_cast<TUPLE&>(std::forward<T>(t)).data());
                 }
 
                 if constexpr (!is_const && !is_lvalue)
                 {
                     return static_cast<data_t&&>(
-                        static_cast<TUPLE&&>(std::forward<T>(t)).data);
+                        static_cast<TUPLE&&>(std::forward<T>(t)).data());
                 }
 
                 if constexpr (is_const && !is_lvalue)
                 {
                     return static_cast<const data_t&&>(
-                        static_cast<const TUPLE&&>(std::forward<T>(t)).data);
+                        static_cast<const TUPLE&&>(std::forward<T>(t)).data());
                 }
             }
         };
