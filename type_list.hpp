@@ -77,7 +77,7 @@ namespace fire {
     struct pop_front;
 
     template <template <typename...> class LIST, typename T0, typename... T1toN>
-    struct pop_front<LIST<T0, T1toN...>> : has_type<type_list<T1toN...>>
+    struct pop_front<LIST<T0, T1toN...>> : has_type<LIST<T1toN...>>
     {
     };
 
