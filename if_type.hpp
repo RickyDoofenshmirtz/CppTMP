@@ -1,3 +1,7 @@
+#pragma once
+
+#include <type_traits>
+
 namespace fire {
     template <typename T>
     struct has_type
@@ -20,4 +24,9 @@ namespace fire {
 
     template <bool condition, typename T, typename E>
     using if_t = typename if_type<condition, T, E>::type;
+
+    static_assert(
+        std::is_same_v<typename if_type<(10 > 5), int, bool>::type, int>);
+    static_assert(
+        std::is_same_v<typename if_type<(10 < 5), int, bool>::type, bool>);
 }

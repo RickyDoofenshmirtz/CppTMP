@@ -1,3 +1,5 @@
+#pragma once
+
 #include "if_type.hpp"
 
 #include <corecrt.h>
@@ -38,10 +40,11 @@ namespace fire {
     {
     };
 
-    static_assert(empty<type_list<>>::value);
-
     template <typename LIST>
     static constexpr bool empty_v = empty<LIST>::value;
+
+    static_assert(empty_v<type_list<>>);
+    static_assert(!empty_v<type_list<int, bool>>);
 
     //////////////////////////////////////////////////////////////////////////////////////
     // front
@@ -71,9 +74,7 @@ namespace fire {
     // pop front
 
     template <typename LIST>
-    struct pop_front
-    {
-    };
+    struct pop_front;
 
     template <template <typename...> class LIST, typename T0, typename... T1toN>
     struct pop_front<LIST<T0, T1toN...>> : has_type<type_list<T1toN...>>
@@ -83,12 +84,16 @@ namespace fire {
     template <typename LIST>
     using pop_front_t = typename pop_front<LIST>::type;
 
+    static_assert(std::is_same_v<
+                  pop_front_t<type_list<int, bool, float>>,
+                  type_list<bool, float>>);
+
     //////////////////////////////////////////////////////////////////////////////////////
     // back
 
     /*
         variadic templates can only be used as the last parameter, so we will
-       have to use recursion
+        have to use recursion
     */
 
     template <typename LIST>
@@ -217,6 +222,7 @@ namespace fire {
     // contains type
 
     //--- old
+    /*
     template <typename SEARCH, typename LIST>
     struct contains_type;
 
@@ -232,6 +238,7 @@ namespace fire {
     struct contains_type<SEARCH, type_list<>> : std::false_type
     {
     };
+    */
 
     //--- new
     template <typename T>
@@ -247,13 +254,12 @@ namespace fire {
     static constexpr bool contains_type_v =
         any<same_as_pred<SEARCH>::template predicate, LIST>::value;
 
-    type_list<int, bool, double> types;
+    // static_assert(contains_type<int, type_list<int, bool, double>>::value);
+    // static_assert(contains_type<bool, type_list<int, bool, double>>::value);
+    // static_assert(!contains_type<float, type_list<int, bool,
+    // double>>::value);
 
-    static_assert(contains_type<int, decltype(types)>::value);
-    static_assert(contains_type<bool, decltype(types)>::value);
-    static_assert(!contains_type<float, decltype(types)>::value);
-
-    static_assert(contains_type_v<int, decltype(types)>);
-    static_assert(contains_type_v<bool, decltype(types)>);
-    static_assert(!contains_type_v<float, decltype(types)>);
+    static_assert(contains_type_v<int, type_list<int, bool, double>>);
+    static_assert(contains_type_v<bool, type_list<int, bool, double>>);
+    static_assert(!contains_type_v<float, type_list<int, bool, double>>);
 } // namespace fire

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "if_type.hpp"
 
 #include <cstddef>

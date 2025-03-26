@@ -1,17 +1,17 @@
-#include "type_list.hpp"
+#include "tuple.hpp"
 
-#include <tuple>
-#include <type_traits>
+#include <iostream>
 
 auto main() -> int
 {
     using namespace fire;
-    
-    type_list<int, bool, double> l;
-    static_assert(std::is_same_v<front_t<decltype(l)>, int>);
 
-    std::tuple<int, bool, double> t;
-    static_assert(std::is_same_v<front_t<decltype(t)>, int>);
+    auto t = make_tuple(8, true, 5.6);
+    std::cout << t.data << '\n';
+
+    tuple t2{ 1, false, 5 };
+    std::cout << t2.data << '\n';
+    std::cout << get<2>(t2) << '\n';
 
     return 0;
 }
