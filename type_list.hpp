@@ -23,6 +23,9 @@ struct type_list
 {
 };
 
+//////////////////////////////////////////////////////////////////////////////////////
+// empty
+
 template <typename LIST>
 struct empty : std::false_type
 {
@@ -35,6 +38,9 @@ struct empty<type_list<>> : std::true_type
 
 static_assert(empty<type_list<>>::value);
 
+template <typename LIST>
+static constexpr bool empty_v = empty<LIST>::value;
+
 //////////////////////////////////////////////////////////////////////////////////////
 // front
 
@@ -46,7 +52,10 @@ struct front<type_list<T0, T1toN...>> : has_type<T0>
 {
 };
 
-static_assert(std::is_same_v<front<type_list<int, bool, double>>::type, int>);
+template <typename LIST>
+using front_t = typename front<LIST>::type;
+
+static_assert(std::is_same_v<front_t<type_list<int, bool, double>>, int>);
 
 //////////////////////////////////////////////////////////////////////////////////////
 // pop front
@@ -62,13 +71,7 @@ struct pop_front<type_list<T0, T1toN...>> : has_type<type_list<T1toN...>>
 };
 
 template <typename LIST>
-using front_t = typename front<LIST>::type;
-
-template <typename LIST>
 using pop_front_t = typename pop_front<LIST>::type;
-
-template <typename LIST>
-static constexpr bool empty_v = empty<LIST>::value;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // back
